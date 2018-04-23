@@ -5,12 +5,14 @@ import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.MenuItem
+import dagger.Lazy
 import io.reactivex.disposables.CompositeDisposable
 import me.ernestzamelczyk.volantessoni.R
 import me.ernestzamelczyk.volantessoni.databinding.ActivityMainBinding
 import me.ernestzamelczyk.volantessoni.view.base.BaseActivity
 import me.ernestzamelczyk.volantessoni.view.calendar.CalendarFragment
 import me.ernestzamelczyk.volantessoni.view.login.LoginActivity
+import me.ernestzamelczyk.volantessoni.view.sheets.SheetsFragment
 import javax.inject.Inject
 
 class MainActivity : BaseActivity() {
@@ -18,12 +20,15 @@ class MainActivity : BaseActivity() {
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     @Inject lateinit var viewModel: MainViewModel
+    private val calendarFragment: Lazy<CalendarFragment> = Lazy { CalendarFragment() }
+    private val sheetsFragment: Lazy<SheetsFragment> = Lazy { SheetsFragment() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         binding.bottomNavigationView.setOnNavigationItemReselectedListener(::onNavigationItemReselected)
         binding.bottomNavigationView.setOnNavigationItemSelectedListener(::onNavigationItemSelected)
+        setActionBar(binding.mainToolbar)
     }
 
     override fun onResume() {
@@ -42,32 +47,34 @@ class MainActivity : BaseActivity() {
                 startActivity(LoginActivity.getIntent(this))
                 finish()
             }
-            MainAction.DISPLAY_CALENDAR_FRAGMENT -> {
+            MainAction.SHOW_CALENDAR_FRAGMENT -> {
                 fragmentManager
                         .beginTransaction()
-                        .replace(R.id.content_frame, CalendarFragment())
+                        .replace(R.id.content_frame, calendarFragment.get())
                         .commit()
             }
-            else -> {}
+            MainAction.SHOW_FEED_FRAGMENT -> {
+                fragmentManager
+                        .beginTransaction()
+                        .replace(R.id.content_frame, sheetsFragment.get())
+                        .commit()
+            }
+            MainAction.SHOW_SETTINGS_FRAGMENT -> {
+
+            }
+            MainAction.LOGOUT -> {
+
+            }
         }
     }
 
-    private fun onNavigationItemSelected(item: MenuItem): Boolean {
-        return viewModel.onNavigationItemSelected(
-                when (item.itemId) {
-                    R.id.menu_logout -> MainAction.LOGOUT
-                    else -> null
-                }
-        )
-    }
+    private fun onNavigationItemSelected(item: MenuItem): Boolean =
+        viewModel.onNavigationItemSelected(MainNavigationItem.fromId(item.itemId))
 
     private fun onNavigationItemReselected(item: MenuItem) {
-        viewModel.onNavigationItemReselected(
-                when (item.itemId) {
-                    R.id.menu_logout -> MainAction.LOGOUT
-                    else -> null
-                }
-        )
+        MainNavigationItem.fromId(item.itemId)?.let {
+            viewModel.onNavigationItemReselected(it)
+        }
     }
 
     override fun onDestroy() {

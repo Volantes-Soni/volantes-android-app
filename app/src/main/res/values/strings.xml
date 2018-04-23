@@ -9,6 +9,9 @@
     <string name="email">E-mail</string>
     <string name="password">Password</string>
     <string name="calendar">Calendar</string>
+    <string name="feed">Feed</string>
+    <string name="settings">Settings</string>
+    <string name="file_icon_desc">File icon</string>
 
     <string-array name="months">
         <item>January</item>

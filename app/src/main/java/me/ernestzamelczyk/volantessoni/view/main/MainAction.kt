@@ -1,7 +1,9 @@
 package me.ernestzamelczyk.volantessoni.view.main
 
-enum class MainAction {
+internal enum class MainAction {
     START_LOGIN_ACTIVITY_AND_FINISH,
-    DISPLAY_CALENDAR_FRAGMENT,
+    SHOW_FEED_FRAGMENT,
+    SHOW_CALENDAR_FRAGMENT,
+    SHOW_SETTINGS_FRAGMENT,
     LOGOUT
 }

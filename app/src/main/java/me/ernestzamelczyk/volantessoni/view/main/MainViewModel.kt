@@ -8,26 +8,42 @@ import javax.inject.Inject
 @ActivityScoped
 class MainViewModel @Inject constructor(private val firebaseAuth: FirebaseAuth) {
 
-    val actionsSubject: BehaviorSubject<MainAction> = BehaviorSubject.create()
+    internal val actionsSubject: BehaviorSubject<MainAction> = BehaviorSubject.create()
 
-    fun onNavigationItemSelected(action: MainAction?): Boolean = when(action) {
-        MainAction.LOGOUT -> {
-            firebaseAuth.signOut()
-            actionsSubject.onNext(MainAction.START_LOGIN_ACTIVITY_AND_FINISH)
-            true
+    internal fun onNavigationItemSelected(navigationItem: MainNavigationItem?): Boolean {
+//        MainAction.LOGOUT -> {
+//            firebaseAuth.signOut()
+//            actionsSubject.onNext(MainAction.START_LOGIN_ACTIVITY_AND_FINISH)
+//        }
+        if(navigationItem != null) {
+            when (navigationItem) {
+                MainNavigationItem.FEED -> {
+                    actionsSubject.onNext(MainAction.SHOW_FEED_FRAGMENT)
+                }
+                MainNavigationItem.CALENDAR -> {
+                    actionsSubject.onNext(MainAction.SHOW_CALENDAR_FRAGMENT)
+                }
+                MainNavigationItem.SETTINGS -> {
+                    actionsSubject.onNext(MainAction.SHOW_SETTINGS_FRAGMENT)
+                }
+            }
+            return true
+        } else {
+            return false
         }
-        else -> false
     }
 
-    fun onNavigationItemReselected(action: MainAction?) {
-        when(action) {
-            MainAction.LOGOUT -> {
-                firebaseAuth.signOut()
-                actionsSubject.onNext(MainAction.START_LOGIN_ACTIVITY_AND_FINISH)
+    internal fun onNavigationItemReselected(navigationItem: MainNavigationItem) {
+        when(navigationItem) {
+            MainNavigationItem.FEED -> {
+
             }
-            MainAction.START_LOGIN_ACTIVITY_AND_FINISH -> TODO()
-            MainAction.DISPLAY_CALENDAR_FRAGMENT -> TODO()
-            null -> TODO()
+            MainNavigationItem.CALENDAR -> {
+
+            }
+            MainNavigationItem.SETTINGS -> {
+
+            }
         }
     }
 
